@@ -8,11 +8,11 @@ Script Purpose:
 	  Run this script to re-define the DDL structure of 'bronze' Tables
 ===============================================================================
 */
-IF OBJECT_ID('dbo.online_retail', 'U') IS NOT NULL
-DROP TABLE IF EXISTS dbo.online_retail;
+IF OBJECT_ID('bronze.online_retail', 'U') IS NOT NULL
+DROP TABLE IF EXISTS bronze.online_retail;
 GO
 
-CREATE TABLE dbo.online_retail (
+CREATE TABLE bronze.online_retail (
 	InvoiceNo    NVARCHAR(50),
 	StockCode    NVARCHAR(50),
 	Description  NVARCHAR(255),
