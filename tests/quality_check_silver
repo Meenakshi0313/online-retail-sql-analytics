@@ -1,0 +1,82 @@
+/*
+===============================================================================
+Silver Data Quality Checks
+===============================================================================
+Script Purpose:
+    Runs a series of checks on the silver.online_retail_clean table to ensure
+    the data is clean, properly typed, deduplicated, and ready for analytics.
+===============================================================================
+*/
+
+-- 1) No NULLs in required fields
+SELECT COUNT(*) AS null_invoiceNo
+FROM silver.online_retail_clean
+WHERE InvoiceNo IS NULL;
+GO
+
+SELECT COUNT(*) AS null_stockCode
+FROM silver.online_retail_clean
+WHERE StockCode IS NULL;
+GO
+
+SELECT COUNT(*) AS null_quantity
+FROM silver.online_retail_clean
+WHERE Quantity IS NULL;
+GO
+
+SELECT COUNT(*) AS null_invoiceDate
+FROM silver.online_retail_clean
+WHERE InvoiceDate IS NULL;
+GO
+
+-- 2) Ensure numeric values are valid (greater than or equal to 0 if business rule)
+SELECT COUNT(*) AS negative_quantity
+FROM silver.online_retail_clean
+WHERE Quantity < 0;
+GO
+
+SELECT COUNT(*) AS negative_unitPrice
+FROM silver.online_retail_clean
+WHERE UnitPrice < 0;
+GO
+
+-- 3) Duplicate check (should be none if deduplicated correctly)
+SELECT
+    InvoiceNo,
+    StockCode,
+    CustomerID,
+    COUNT(*) AS dup_count
+FROM silver.online_retail_clean
+GROUP BY InvoiceNo, StockCode, CustomerID
+HAVING COUNT(*) > 1;
+GO
+
+-- 4) Leading/trailing space issues (should be none after trimming)
+SELECT COUNT(*) AS desc_trim_issues
+FROM silver.online_retail_clean
+WHERE Description != LTRIM(RTRIM(Description));
+GO
+
+SELECT COUNT(*) AS country_trim_issues
+FROM silver.online_retail_clean
+WHERE Country != LTRIM(RTRIM(Country));
+GO
+
+-- 5) Date range sanity check (no future or unreasonable dates)
+SELECT COUNT(*) AS future_invoice_dates
+FROM silver.online_retail_clean
+WHERE InvoiceDate > GETDATE();
+GO
+
+-- Example of a reasonable date lower bound (e.g., before year 1990 likely bad)
+SELECT COUNT(*) AS very_old_dates
+FROM silver.online_retail_clean
+WHERE InvoiceDate < '1990-01-01';
+GO
+
+-- 6) Final overall sanity summary
+SELECT
+    'Total Silver Records' AS CheckType,
+    COUNT(*) AS Value
+FROM silver.online_retail_clean;
+GO
