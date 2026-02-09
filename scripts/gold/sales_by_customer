@@ -1,0 +1,31 @@
+/*
+===============================================================================
+Gold View: Sales by Customer
+===============================================================================
+Purpose:
+    Summarizes customer purchase volume and revenue; sorting shown in query.
+===============================================================================
+*/
+
+DROP VIEW IF EXISTS gold.sales_by_customer;
+GO
+
+CREATE VIEW gold.sales_by_customer AS
+SELECT
+    CustomerID,
+    COUNT(DISTINCT InvoiceNo) AS TotalOrders,
+    SUM(Quantity) AS TotalQuantity,
+    CAST(SUM(Quantity * UnitPrice) AS DECIMAL(18,2)) AS TotalRevenue
+FROM silver.online_retail_clean
+GROUP BY CustomerID;
+GO
+
+-- Sorted query using the view
+SELECT
+    CustomerID,
+    TotalOrders,
+    TotalQuantity,
+    TotalRevenue
+FROM gold.sales_by_customer
+ORDER BY TotalRevenue DESC;
+GO
