@@ -1,0 +1,33 @@
+/*
+===============================================================================
+Gold View: Sales by Country
+===============================================================================
+Purpose:
+    Provides aggregated sales metrics by Country. Sorting is done when querying.
+===============================================================================
+*/
+
+DROP VIEW IF EXISTS gold.sales_by_country;
+GO
+
+CREATE VIEW gold.sales_by_country AS
+SELECT
+    Country,
+    COUNT(DISTINCT InvoiceNo) AS TotalOrders,
+    SUM(Quantity) AS TotalQuantity,
+    CAST(SUM(Quantity * UnitPrice) AS DECIMAL(18,2)) AS TotalRevenue
+FROM silver.online_retail_clean
+GROUP BY Country;
+GO
+
+-- Sorted query using the view
+SELECT
+    Country,
+    TotalOrders,
+    TotalQuantity,
+    TotalRevenue
+FROM gold.sales_by_country
+ORDER BY TotalRevenue DESC;
+GO
+
+
