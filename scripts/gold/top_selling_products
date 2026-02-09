@@ -1,0 +1,31 @@
+/*
+===============================================================================
+Gold View: Top Selling Products
+===============================================================================
+Purpose:
+    Aggregates revenue and quantity sold by product. Sorting is done when querying.
+===============================================================================
+*/
+
+DROP VIEW IF EXISTS gold.top_selling_products;
+GO
+
+CREATE VIEW gold.top_selling_products AS
+SELECT
+    StockCode,
+    LTRIM(RTRIM(Description)) AS Description,
+    SUM(Quantity) AS TotalQuantitySold,
+    CAST(SUM(Quantity * UnitPrice) AS DECIMAL(18,2)) AS TotalRevenue
+FROM silver.online_retail_clean
+GROUP BY StockCode, LTRIM(RTRIM(Description));
+GO
+
+-- Sorted query using the view
+SELECT
+    StockCode,
+    Description,
+    TotalQuantitySold,
+    TotalRevenue
+FROM gold.top_selling_products
+ORDER BY TotalRevenue DESC;
+GO
