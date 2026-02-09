@@ -1,0 +1,37 @@
+/*
+===============================================================================
+Gold View: Product Segment Report
+===============================================================================
+Purpose:
+    Summarizes count and revenue percentage of products in each segment.
+===============================================================================
+*/
+
+DROP VIEW IF EXISTS gold.product_segment_report;
+GO
+
+CREATE VIEW gold.product_segment_report AS
+
+WITH segment_agg AS (
+    SELECT
+        ProductSegment,
+        COUNT(*) AS ProductCount,
+        SUM(NetRevenue) AS TotalNetRevenue
+    FROM gold.product_sales_report
+    GROUP BY ProductSegment
+),
+grand_total AS (
+    SELECT
+        SUM(ProductCount) AS TotalProducts,
+        SUM(TotalNetRevenue) AS GrandNetRevenue
+    FROM segment_agg
+)
+SELECT
+    s.ProductSegment,
+    s.ProductCount,
+    CAST(s.ProductCount * 100.0 / NULLIF(g.TotalProducts,0) AS DECIMAL(5,2)) AS ProductPercentage,
+    CAST(s.TotalNetRevenue AS DECIMAL(12,2)) AS TotalNetRevenue,
+    CAST(s.TotalNetRevenue * 100.0 / NULLIF(g.GrandNetRevenue,0) AS DECIMAL(5,2)) AS RevenuePercentage
+FROM segment_agg s
+CROSS JOIN grand_total g;
+GO
