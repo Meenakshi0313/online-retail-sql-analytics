@@ -5,24 +5,26 @@ DDL Script: Create Bronze Table - Online Retail
 Script Purpose:
     This script creates the 'bronze.online_retail' table for raw data ingestion.
     - Drops the table if it already exists.
-    - Uses realistic data types for each column.
+    - Stores all columns as NVARCHAR so that no data conversion issues occur
+      during loading. This preserves raw source fidelity and avoids BULK INSERT
+      errors when source data is inconsistent.
 ===============================================================================
 */
 
 -- Drop the table if it already exists
-IF OBJECT_ID('bronze.online_retail', 'U') IS NOT NULL
-    DROP TABLE bronze.online_retail;
+DROP TABLE IF EXISTS bronze.online_retail;
 GO
 
--- Create Bronze table with realistic data types
+-- Create Bronze table
 CREATE TABLE bronze.online_retail (
-    InvoiceNo    NVARCHAR(50)   NOT NULL,
-    StockCode    NVARCHAR(50)   NOT NULL,
+    InvoiceNo    NVARCHAR(50),
+    StockCode    NVARCHAR(50),
     Description  NVARCHAR(255),
-    Quantity     INT,
-    InvoiceDate  DATETIME,
-    UnitPrice    DECIMAL(10,2),
+    Quantity     NVARCHAR(50),
+    InvoiceDate  NVARCHAR(50),
+    UnitPrice    NVARCHAR(50),
     CustomerID   NVARCHAR(50),
     Country      NVARCHAR(50)
 );
 GO
+
