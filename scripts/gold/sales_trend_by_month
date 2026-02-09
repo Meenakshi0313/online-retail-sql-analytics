@@ -1,0 +1,33 @@
+/*
+===============================================================================
+Gold View: Sales Trend by Year & Month
+===============================================================================
+Purpose:
+    Aggregates Silver sales by year and month for trend analysis.
+===============================================================================
+*/
+
+DROP VIEW IF EXISTS gold.sales_trend_by_month;
+GO
+
+CREATE VIEW gold.sales_trend_by_month AS
+SELECT
+    YEAR(InvoiceDate) AS SalesYear,
+    MONTH(InvoiceDate) AS SalesMonth,
+    COUNT(DISTINCT InvoiceNo) AS TotalOrders,
+    SUM(Quantity) AS TotalQuantity,
+    CAST(SUM(Quantity * UnitPrice) AS DECIMAL(18,2)) AS TotalRevenue
+FROM silver.online_retail_clean
+GROUP BY YEAR(InvoiceDate), MONTH(InvoiceDate);
+GO
+
+-- Sorted query using the view
+SELECT
+    SalesYear,
+    SalesMonth,
+    TotalOrders,
+    TotalQuantity,
+    TotalRevenue
+FROM gold.sales_trend_by_month
+ORDER BY SalesYear DESC, SalesMonth DESC;
+GO
