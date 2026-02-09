@@ -3,19 +3,19 @@
 Stored Procedure: Load Bronze Layer (Source -> Bronze)
 ===============================================================================
 Script Purpose:
-    This stored procedure loads data into the 'bronze' schema from external CSV files. 
-    It performs the following actions:
-    - Truncates the bronze tables before loading data.
-    - Uses the `BULK INSERT` command to load data from csv Files to bronze tables.
+    This stored procedure loads data into the 'bronze.online_retail' table
+    from an external CSV file. It performs the following actions:
+    - Truncates the bronze table before loading.
+    - Uses BULK INSERT to load CSV data into the raw bronze table.
 
 Parameters:
-    None. 
-	  This stored procedure does not accept any parameters or return any values.
+    None.
 
 Usage Example:
     EXEC bronze.proc_load_bronze_online_retail;
 ===============================================================================
 */
+
 CREATE OR ALTER PROCEDURE bronze.proc_load_bronze_online_retail
 AS
 BEGIN
@@ -32,9 +32,8 @@ BEGIN
         TRUNCATE TABLE bronze.online_retail;
 
         PRINT '>> Inserting Data Into: bronze.online_retail';
-        -- NOTE: Local file path used for learning/demo purposes
         BULK INSERT bronze.online_retail
-        FROM 'C:\Users\lakis\OneDrive\Desktop\meenakshi\SQL\projects\online_retail.csv'
+        FROM 'C:\SQLData\online_retail.csv'
         WITH (
             FIRSTROW = 2,
             FIELDTERMINATOR = ',',
@@ -62,8 +61,10 @@ BEGIN
 END;
 GO
 
--- Executing Procedure
+-- Execute the procedure
 EXEC bronze.proc_load_bronze_online_retail;
+GO
+
 
 
 
