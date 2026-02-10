@@ -56,6 +56,7 @@ ORDER BY NetRevenue DESC;
 SELECT SalesYear, SalesMonth, TotalRevenue
 FROM gold.sales_trend_by_month
 ORDER BY SalesYear DESC, SalesMonth DESC;
+
 ```
 
 ---
