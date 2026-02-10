@@ -22,12 +22,12 @@ This dataset serves as the source for the Bronze layer of the data warehouse.
 ### Data Flow
 The project follows a standard **Bronze → Silver → Gold** data pipeline:  
 
-![Data Flow](docs/Data Flow.drawio.png)
+[![Data Flow](docs/Data Flow.drawio.png)](docs/Data Flow.drawio.png)
 
 ### Data Architecture
 The high-level architecture shows tables, views, and the transformations applied at each layer:  
 
-![Data Architecture](docs/Data Architect.drawio.png)
+[![Data Architecture](docs/Data Architect.drawio.png)](docs/Data Architect.drawio.png)
 
 ## Layers Overview
 
@@ -60,4 +60,5 @@ This project is licensed under the MIT License — free to use, modify, and shar
 
 ## About Me
 Hi! I’m Meenakshi Singh, an aspiring Data Analyst. I have a strong foundation in SQL and Excel, with a keen interest in transforming raw data into actionable business insights. This project reflects my hands-on approach to learning, applying data engineering and analytics concepts to real-world sales data.
+
 
