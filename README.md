@@ -1,88 +1,119 @@
-# Data Warehouse & Analytics Project
+Online Retail SQL Analytics
 
-Welcome to my Data Warehouse and Analytics Project! 🚀  
-This repository demonstrates a complete end-to-end workflow for building a data warehouse, performing data cleansing and transformation, and generating actionable analytical insights using SQL Server. It is designed as a portfolio project to showcase practical data engineering and analytical skills.
+Welcome to the Online Retail SQL Analytics Project! 🚀
+This project demonstrates how raw sales data can be transformed and analyzed to generate actionable business insights using SQL. It is designed as a portfolio project to showcase skills in SQL, data analysis, data cleaning, and reporting.
 
----
+Project Objective
 
-## Project Objective
-The goal of this project is to consolidate raw sales data into a structured data warehouse and generate business insights. The project focuses on:
+Business Analytics & Reporting:
 
-- Understanding **customer behavior** and segmentation  
-- Analyzing **product performance** and sales trends  
-- Computing key **business metrics (KPIs)** for decision-making  
+Transform raw sales data into a structured format suitable for analysis.
 
-This workflow highlights best practices in data ingestion, cleaning, transformation, and reporting.
+Clean, validate, and deduplicate data to ensure accuracy.
 
----
+Generate actionable insights on customer behavior, product performance, and sales trends using SQL queries and aggregations.
 
-## Dataset
-The raw sales dataset is included in the [dataset](dataset) folder:  
+Present findings using KPIs, segments, and aggregated metrics to support business decision-making.
 
-- `online_retail.csv` – transactional sales data containing invoices, products, customers, quantities, prices, and countries.  
+Data Flow & Architecture
 
-This dataset is used as the source for the Bronze layer of the data warehouse.  
+Diagrams are included in the /docs folder:
 
-> ✅ *Note:* The dataset is part of this repository and can be used to run the project end-to-end.
+Data Flow: /docs/DataFlow.drawio.png
 
----
+Data Architect: /docs/DataArchitect.drawio.png
 
-## Project Architecture
+These diagrams illustrate how data moves from raw CSVs into structured tables and views, and the transformations applied at each stage for analysis.
 
-### Data Flow
-The project follows a **Bronze → Silver → Gold** layered data pipeline:
+Layers Overview
 
-[![Data Flow](docs/DataFlow.drawio.png)](docs/DataFlow.drawio.png)
+Bronze Layer
 
-### Data Architecture
-The high-level architecture displays all tables, views, and transformations applied at each layer:
+Object Type: Table (bronze.online_retail)
 
-[![Data Architecture](docs/DataArchitect.drawio.png)](docs/DataArchitect.drawio.png)
+Purpose: Raw data ingestion from CSV.
 
----
+Loading Method: Full load via truncate and insert.
 
-## Layers Overview
+Transformations: None (raw data preserved).
 
-### Bronze Layer
-- **Object Type:** Table  
-- **Purpose:** Raw data ingestion from source CSV files  
-- **Process:** Full load using truncate & insert. No transformations are applied to preserve source data fidelity.  
+Silver Layer
 
-### Silver Layer
-- **Object Type:** Table  
-- **Purpose:** Cleaned and structured data for analytics  
-- **Process:**  
-  - Data type conversion  
-  - Null handling and trimming of whitespace  
-  - Deduplication and validation  
-  - Ensures data is analytics-ready for reporting  
+Object Type: Table (silver.online_retail_clean)
 
-### Gold Layer
-- **Object Type:** Views  
-- **Purpose:** Business-level reporting and analytical insights  
-- **Process:**  
-  - Aggregate data for customers, products, and sales trends  
-  - Calculate KPIs  
-  - Segment customers and products  
-  - Provide actionable insights for business decision-making  
+Purpose: Cleaned and typed data ready for analysis.
 
----
+Transformations: Data type conversion, trimming spaces, deduplication, null handling, and basic validation.
 
-## How to Reproduce / Run
-1. Clone this repository to your local machine.  
-2. Place the raw CSV (`online_retail.csv`) in the `/dataset` folder (already included).  
-3. Execute the SQL scripts in the following order:  
-   - Bronze Layer: `bronze.proc_load_bronze_online_retail`  
-   - Silver Layer: `silver.proc_load_silver_online_retail`  
-   - Gold Layer: Views for analytics and reporting  
-4. Refer to the diagrams in `/docs` to understand the data flow and architecture.  
+Gold Layer
 
----
+Object Type: Views (8 views for customer, product, and sales reporting)
 
-## License
-This project is licensed under the MIT License — free to use, modify, and share with proper attribution.
+Purpose: Business-level aggregates, KPIs, and segmentation for decision-making.
 
----
+Transformations: Aggregation, revenue calculation, customer/product segmentation, and trend analysis.
 
-## About Me
-Hi! I’m Meenakshi Singh, an aspiring Data Analyst with a strong foundation in SQL and Excel. I enjoy transforming raw data into meaningful business insights. This project reflects my hands-on approach to learning, applying data engineering and analytical concepts to real-world sales data.
+Views Included:
+
+customer_sales_report – Aggregates revenue, quantity, orders, and segments customers by value.
+
+customer_segment_report – Summarizes customer counts and percentages by segment.
+
+product_sales_report – Aggregates revenue, quantity sold, and segments products by performance.
+
+product_segment_report – Summarizes product counts and revenue percentages by segment.
+
+sales_by_country – Shows total revenue, orders, and quantity per country.
+
+sales_by_customer – Displays total revenue, orders, and quantity per customer.
+
+sales_trend_by_month – Shows monthly sales trends for revenue, quantity, and orders.
+
+top_selling_products – Lists products by total revenue and quantity sold.
+
+Dataset
+
+The dataset (online_retail.csv) is included in the /dataset folder.
+
+How to Run / Reproduce
+
+Clone this repository to your local machine.
+
+Place the raw CSV (online_retail.csv) in the /dataset folder (already included).
+
+Execute the SQL scripts in the following order:
+
+Bronze Layer: bronze.proc_load_bronze_online_retail
+
+Silver Layer: silver.proc_load_silver_online_retail
+
+Gold Layer: Views for analytics and reporting.
+
+Refer to the diagrams in /docs to understand the data flow and architecture.
+
+Tests
+
+Quality checks are provided in the /tests folder for both Bronze and Silver layers to ensure data cleanliness, consistency, and validity. These tests help identify issues like null values, duplicates, negative numbers, or incorrectly formatted data before analysis.
+
+Example Analytics Queries
+
+1. Top 5 Customers by Revenue
+
+SELECT TOP 5 CustomerID, NetRevenue
+FROM gold.customer_sales_report
+ORDER BY NetRevenue DESC;
+
+
+2. Monthly Sales Trend
+
+SELECT SalesYear, SalesMonth, TotalRevenue
+FROM gold.sales_trend_by_month
+ORDER BY SalesYear DESC, SalesMonth DESC;
+
+License
+
+This project is licensed under the MIT License. You are free to use, modify, and share it with proper attribution.
+
+About Me
+
+Hi! I’m Meenakshi Singh, an aspiring Data Analyst with a strong foundation in SQL and Excel. I enjoy transforming raw data into meaningful insights, understanding relationships in data, and creating KPIs that help businesses make better decisions. This project reflects my hands-on approach to data analysis and reporting.
