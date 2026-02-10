@@ -1,108 +1,56 @@
-Retail Analytics – Medallion Architecture Project
+# Data Warehouse & Analytics Project
 
-Welcome to the Retail Analytics Data Warehouse Project repository! 🚀
-This project demonstrates a complete analytics workflow using SQL Server and the Medallion Architecture (Bronze, Silver, Gold) to transform raw retail data into business-ready insights.
-It is designed as a portfolio project showcasing practical data analytics and data modeling skills.
+Welcome! 🚀  
+This project demonstrates a complete data warehousing and analytics workflow using SQL Server, from raw data ingestion to actionable business insights.
 
-🚀 Project Objective
-Data Engineering
+## Project Objective
+Build a modern data warehouse and deliver SQL-based analytics to understand:
 
-Build a structured analytics pipeline that ingests raw retail transaction data, cleans and standardizes it, and produces business-level analytical outputs.
+- Customer behavior  
+- Product performance  
+- Sales trends  
 
-Analytics & Reporting
+## Dataset
+The raw sales dataset used is available in the [dataset](dataset) folder:  
 
-Develop SQL-based analytical views to provide insights into:
+- `online_retail.csv` – raw transactional sales data.
 
-Customer behavior
+## Project Architecture
 
-Product performance
+### Data Flow
+![Data Flow](docs/data_flow.png)
 
-Sales and revenue trends
+### Data Architecture
+![Data Architecture](docs/data_architecture.png)
 
-🏗️ Architecture Overview
+## Layers Overview
 
-This project follows the Medallion Architecture pattern:
+### Bronze Layer
+- **Type:** Table  
+- **Purpose:** Raw data ingestion from CSV  
+- **Process:** Full load (truncate & insert), no transformation
 
-Bronze Layer: Raw data ingestion from CSV files (no transformations)
+### Silver Layer
+- **Type:** Table  
+- **Purpose:** Cleaned, typed, and analytics-ready data  
+- **Process:** Null handling, type conversion, trimming, deduplication, data validation
 
-Silver Layer: Data cleansing, validation, type conversions, and deduplication
+### Gold Layer
+- **Type:** Views  
+- **Purpose:** Business-level KPIs & aggregates  
+- **Process:** Generate customer, product, and sales insights, including business-level metrics and segmentation
 
-Gold Layer: Business-level aggregates, KPIs, and analytical views
+## How to Reproduce / Run
+1. Clone the repository to your local machine.  
+2. Place the raw CSV (`online_retail.csv`) in the `/dataset` folder (already included).  
+3. Use SQL Server to run the scripts in order:
+   - **Bronze Layer:** `bronze.proc_load_bronze_online_retail`  
+   - **Silver Layer:** `silver.proc_load_silver_online_retail`  
+   - **Gold Layer:** Views to generate analytical reports.  
+4. Use the diagrams in `/docs` to understand data flow and architecture.
 
-The architecture ensures data quality improves at each stage while keeping transformations transparent and traceable.
+## License
+MIT License – free to use with attribution.
 
-🧩 Data Layers Summary
-🥉 Bronze Layer
-
-Object Type: Tables
-
-Load Strategy: Full load (Truncate & Bulk Insert)
-
-Purpose: Store raw source data exactly as received, preserving source fidelity
-
-🥈 Silver Layer
-
-Object Type: Tables
-
-Transformations:
-
-Data type conversions
-
-NULL and invalid value handling
-
-Text trimming and standardization
-
-Deduplication
-
-Purpose: Provide clean, analytics-ready data
-
-🥇 Gold Layer
-
-Object Type: Views
-
-Purpose: Business-level aggregations and KPIs
-
-Focus Areas:
-
-Customer analytics
-
-Product analytics
-
-Sales and trend analysis
-
-📊 Analytics Use Cases
-
-The Gold layer supports:
-
-BI dashboards (Power BI / Tableau)
-
-Ad-hoc SQL analysis
-
-Business reporting for stakeholders
-
-🛠️ Tech Stack
-
-SQL Server
-
-SQL (T-SQL)
-
-Medallion Architecture
-
-CSV-based batch ingestion
-
- 📂 Dataset
-The dataset used in this project is a public online retail transactions dataset.
-It is stored in the `data/` folder and serves as the source for building the Bronze, Silver, and Gold layers of the analytics pipeline.
-
-
-🛡️ License
-
-This project is licensed under the MIT License. You are free to use, modify, and share it with proper attribution.
-
-🌟 About Me
-
-Hi! I’m Meenakshi Singh, an aspiring Data Analyst with a strong foundation in SQL and Excel and a growing interest in data analytics.
-I enjoy working with structured data, applying data quality rules, and transforming raw transactional data into meaningful business insights.
-This project reflects my hands-on learning approach and my understanding of real-world analytics workflows.
-
-
+## About Me
+Hi! I'm Meenakshi Singh, an aspiring Data Analyst with expertise in SQL and Excel. This project demonstrates my ability to transform raw data into meaningful business insights, applying real-world data warehousing and analytics concepts.
