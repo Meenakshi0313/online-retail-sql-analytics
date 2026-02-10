@@ -48,13 +48,13 @@ These diagrams illustrate the flow of data from the **Bronze layer** to **Silver
 ```sql
 SELECT TOP 5 CustomerID, NetRevenue
 FROM gold.customer_sales_report
-ORDER BY NetRevenue DESC;
+ORDER BY NetRevenue DESC;:
 
 **2. Monthly Sales Trend**
 ```sql
 SELECT SalesYear, SalesMonth, TotalRevenue
 FROM gold.sales_trend_by_month
-ORDER BY SalesYear DESC, SalesMonth DESC;
+ORDER BY SalesYear DESC, SalesMonth DESC;:
 
 ---
 
@@ -62,6 +62,8 @@ ORDER BY SalesYear DESC, SalesMonth DESC;
 
 This project is licensed under the MIT License.
 You are free to use, modify, and share it with proper attribution.
+
+---
 
 ## About Me
 
