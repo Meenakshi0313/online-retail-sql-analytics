@@ -18,10 +18,11 @@ The raw sales dataset used is available in the [dataset](dataset) folder:
 ## Project Architecture
 
 ### Data Flow
-![Data Flow](docs/data_flow.png)
+![Data Flow](docs/Data Flow.drawio.png)
 
 ### Data Architecture
-![Data Architecture](docs/data_architecture.png)
+![Data Architecture](docs/Data Architect.drawio.png)
+
 
 ## Layers Overview
 
