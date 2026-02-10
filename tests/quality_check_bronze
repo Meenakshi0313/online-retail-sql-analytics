@@ -1,0 +1,71 @@
+/*
+===============================================================================
+Bronze Data Quality Checks
+===============================================================================
+Script Purpose:
+    Runs basic data quality checks on the raw bronze.online_retail table to
+    identify potential issues before loading into the Silver layer.
+===============================================================================
+*/
+
+-- 1) Check for NULLs in key columns
+SELECT COUNT(*) AS null_invoiceNo
+FROM bronze.online_retail
+WHERE InvoiceNo IS NULL;
+GO
+
+SELECT COUNT(*) AS null_stockCode
+FROM bronze.online_retail
+WHERE StockCode IS NULL;
+GO
+
+SELECT COUNT(*) AS null_invoiceDate
+FROM bronze.online_retail
+WHERE InvoiceDate IS NULL;
+GO
+
+-- 2) Check for non-numeric Quantity and UnitPrice
+SELECT COUNT(*) AS non_numeric_quantity
+FROM bronze.online_retail
+WHERE TRY_CAST(Quantity AS INT) IS NULL;
+GO
+
+SELECT COUNT(*) AS non_numeric_unitPrice
+FROM bronze.online_retail
+WHERE TRY_CAST(UnitPrice AS DECIMAL(10,2)) IS NULL;
+GO
+
+-- 3) Duplicate check
+SELECT
+    InvoiceNo,
+    StockCode,
+    CustomerID,
+    COUNT(*) AS dup_count
+FROM bronze.online_retail
+GROUP BY InvoiceNo, StockCode, CustomerID
+HAVING COUNT(*) > 1;
+GO
+
+-- 4) Leading/trailing space issues
+SELECT COUNT(*) AS desc_trim_issues
+FROM bronze.online_retail
+WHERE Description != LTRIM(RTRIM(Description));
+GO
+
+SELECT COUNT(*) AS country_trim_issues
+FROM bronze.online_retail
+WHERE Country != LTRIM(RTRIM(Country));
+GO
+
+-- 5) Basic sanity check for dates (check for invalid or obviously wrong dates)
+SELECT COUNT(*) AS invalid_dates
+FROM bronze.online_retail
+WHERE TRY_CONVERT(DATETIME, InvoiceDate, 103) IS NULL;
+GO
+
+-- 6) Final overall summary
+SELECT
+    'Total Bronze Records' AS CheckType,
+    COUNT(*) AS Value
+FROM bronze.online_retail;
+GO
