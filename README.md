@@ -1,108 +1,62 @@
-Retail Analytics – Medallion Architecture Project
+# Data Warehouse & Analytics Project
 
-Welcome to the Retail Analytics Data Warehouse Project repository! 🚀
-This project demonstrates a complete analytics workflow using SQL Server and the Medallion Architecture (Bronze, Silver, Gold) to transform raw retail data into business-ready insights.
-It is designed as a portfolio project showcasing practical data analytics and data modeling skills.
+Welcome to my Data Warehouse and Analytics Project! 🚀  
+This project demonstrates a full end-to-end workflow for building a data warehouse, performing data cleansing and transformation, and generating analytical insights using SQL Server. It’s designed to showcase real-world data engineering and analytical skills for portfolio purposes.
 
-🚀 Project Objective
-Data Engineering
+## Project Objective
+The main goal of this project is to consolidate raw sales data into a structured data warehouse and generate meaningful insights for business stakeholders. The project focuses on understanding:
 
-Build a structured analytics pipeline that ingests raw retail transaction data, cleans and standardizes it, and produces business-level analytical outputs.
+- Customer behavior and segmentation  
+- Product performance and sales trends  
+- Aggregated business metrics (KPIs) for decision-making
 
-Analytics & Reporting
+## Dataset
+The raw sales dataset is included in the [dataset](dataset) folder:  
 
-Develop SQL-based analytical views to provide insights into:
+- `online_retail.csv` – transactional sales data containing invoices, products, customers, quantities, prices, and countries.  
 
-Customer behavior
+This dataset serves as the source for the Bronze layer of the data warehouse.
 
-Product performance
+## Project Architecture
 
-Sales and revenue trends
+### Data Flow
+The project follows a standard **Bronze → Silver → Gold** data pipeline:  
 
-🏗️ Architecture Overview
+[![Data Flow](docs/DataFlow.drawio.png)](docs/DataFlow.drawio.png)
 
-This project follows the Medallion Architecture pattern:
+### Data Architecture
+The high-level architecture shows tables, views, and the transformations applied at each layer:  
 
-Bronze Layer: Raw data ingestion from CSV files (no transformations)
+[![Data Architecture](docs/DataArchitect.drawio.png)](docs/DataArchitect.drawio.png)
 
-Silver Layer: Data cleansing, validation, type conversions, and deduplication
+## Layers Overview
 
-Gold Layer: Business-level aggregates, KPIs, and analytical views
+### Bronze Layer
+- **Object Type:** Table  
+- **Purpose:** Raw data ingestion from source CSV files  
+- **Process:** Full load with truncate & insert. No transformations are applied to preserve raw data fidelity.
 
-The architecture ensures data quality improves at each stage while keeping transformations transparent and traceable.
+### Silver Layer
+- **Object Type:** Table  
+- **Purpose:** Cleaned and structured data for analytics  
+- **Process:** Data cleansing, type conversion, null handling, trimming of whitespace, and deduplication. Ensures data is accurate and ready for reporting.
 
-🧩 Data Layers Summary
-🥉 Bronze Layer
+### Gold Layer
+- **Object Type:** Views  
+- **Purpose:** Business-level reporting and analytical insights  
+- **Process:** Aggregate data for customers, products, and sales trends. Calculates key performance indicators (KPIs), segments customers and products, and provides actionable insights for business decisions.
 
-Object Type: Tables
+## How to Reproduce / Run
+1. Clone this repository to your local machine.  
+2. Place the raw CSV (`online_retail.csv`) in the `/dataset` folder (already included).  
+3. Run the SQL scripts in order:  
+   - Bronze Layer: `bronze.proc_load_bronze_online_retail`  
+   - Silver Layer: `silver.proc_load_silver_online_retail`  
+   - Gold Layer: Views for analytics and reporting  
+4. Use the diagrams in `/docs` to understand data flow and architecture.
 
-Load Strategy: Full load (Truncate & Bulk Insert)
+## License
+This project is licensed under the MIT License — free to use, modify, and share with proper attribution.
 
-Purpose: Store raw source data exactly as received, preserving source fidelity
-
-🥈 Silver Layer
-
-Object Type: Tables
-
-Transformations:
-
-Data type conversions
-
-NULL and invalid value handling
-
-Text trimming and standardization
-
-Deduplication
-
-Purpose: Provide clean, analytics-ready data
-
-🥇 Gold Layer
-
-Object Type: Views
-
-Purpose: Business-level aggregations and KPIs
-
-Focus Areas:
-
-Customer analytics
-
-Product analytics
-
-Sales and trend analysis
-
-📊 Analytics Use Cases
-
-The Gold layer supports:
-
-BI dashboards (Power BI / Tableau)
-
-Ad-hoc SQL analysis
-
-Business reporting for stakeholders
-
-🛠️ Tech Stack
-
-SQL Server
-
-SQL (T-SQL)
-
-Medallion Architecture
-
-CSV-based batch ingestion
-
- 📂 Dataset
-The dataset used in this project is a public online retail transactions dataset.
-It is stored in the `data/` folder and serves as the source for building the Bronze, Silver, and Gold layers of the analytics pipeline.
-
-
-🛡️ License
-
-This project is licensed under the MIT License. You are free to use, modify, and share it with proper attribution.
-
-🌟 About Me
-
-Hi! I’m Meenakshi Singh, an aspiring Data Analyst with a strong foundation in SQL and Excel and a growing interest in data analytics.
-I enjoy working with structured data, applying data quality rules, and transforming raw transactional data into meaningful business insights.
-This project reflects my hands-on learning approach and my understanding of real-world analytics workflows.
-
-
+## About Me
+Hi! I’m Meena
