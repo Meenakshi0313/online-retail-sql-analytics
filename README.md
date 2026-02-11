@@ -1,75 +1,184 @@
-# Online Retail SQL Analytics 🚀
-
-Welcome to the **Online Retail SQL Analytics** project!  
-This project demonstrates a complete end-to-end analytics solution for an online retail dataset, from raw data ingestion to actionable business insights. It highlights hands-on skills in SQL, data cleaning, transformation, and reporting, designed for a **Junior Data Analyst portfolio**.
+## Online Retail SQL Analytics 🚀
 
 ---
 
-## Project Objective
+## Project Overview
 
-The goal of this project is to consolidate and analyze sales data to generate meaningful insights into **customer behavior, product performance, and overall sales trends**. Using SQL Server, the project applies **data warehousing concepts** and **data quality best practices** to prepare clean, analytics-ready data.
+This project presents an end-to-end SQL analytics solution for an online retail dataset using SQL Server. It demonstrates how raw transactional data can be transformed into analytics-ready datasets using a structured Medallion (Bronze–Silver–Gold) architecture.
+
+The project focuses on building business-focused analytical views that support customer analysis, product performance evaluation, revenue tracking, and sales trend analysis. These views are designed to act as a semantic layer for downstream reporting and BI tools such as Power BI.
+
+---
+
+## Business Objectives
+
+The primary objective of this project is to derive actionable business insights from online retail sales data by answering questions such as:
+
+Who are the highest-value and most loyal customers?
+
+How is revenue distributed across customers and products?
+
+What impact do product returns have on net revenue?
+
+Which products and countries contribute the most to sales?
+
+How do sales trends change over time?
 
 ---
 
 ## Dataset
 
-The dataset used in this project is included in the `/dataset` folder.  
-It contains **raw sales data (online_retail.csv)** from an online retail store.
+The dataset used in this project is provided in the /dataset folder as a CSV file:
+
+online_retail.csv — transactional sales data from an online retail store
+
+The data includes invoices, products, customers, quantities, pricing, dates, and country-level information.
 
 ---
 
-## Documentation & Diagrams
+## Data Architecture
 
-Project diagrams are available in the `/docs` folder:
+This project follows the Medallion Architecture pattern:
 
-- **Data Flow Diagram**: [DataFlow.drawio.png](docs/DataFlow.drawio.png)  
-- **Data Architecture Diagram**: [DataArchitect.drawio.png](docs/DataArchitect.drawio.png)  
+**Bronze Layer**
+Raw data ingestion from CSV files without transformations.
 
-These diagrams illustrate the flow of data from the **Bronze layer** to **Silver** and **Gold layers**, including transformations, tables, and views.
+**Silver Layer**
+Cleaned and standardized transactional data with:
+
+Data type corrections
+
+Null handling
+
+Removal of invalid records
+
+Explicit handling of sales and returns
+
+**Gold Layer**
+Curated, analytics-ready views optimized for reporting, KPI tracking, and BI consumption.
+
+Architecture and data flow diagrams are available in the /docs folder.
+
+---
+
+## Gold Layer – Analytical Views
+
+The Gold layer serves as a semantic layer and contains the following views:
+
+---
+
+**Customer Analytics**
+
+customer_sales_report
+Provides customer-level KPIs including total orders, gross revenue, return revenue, net revenue, average order value (AOV), purchase lifecycle metrics, and customer segmentation.
+
+customer_segment_report
+Summarizes the number and percentage of customers across defined customer segments.
+
+sales_by_customer
+Breaks down total orders, quantity, and revenue by customer to analyze revenue concentration.
+
+**Product Analytics**
+
+product_sales_report
+Aggregates product-level metrics including quantity sold and returned, gross and net revenue, average revenue per order, and product performance segmentation.
+
+product_segment_report
+Analyzes product distribution and revenue contribution across performance segments.
+
+top_selling_products
+Identifies top-performing products by quantity sold and revenue.
+
+**Sales & Trend Analytics**
+
+sales_by_country
+Evaluates sales performance across different countries.
+
+sales_trend_by_month
+Aggregates sales by year and month to identify seasonality and revenue trends.
+
+---
+
+## Key Business Insights (Example)
+
+A small percentage of customers contribute a significant share of total revenue, indicating strong repeat-customer behavior.
+
+High-value loyal customers generate substantially higher lifetime revenue compared to new high-value customers.
+
+Certain products show high gross sales but also high return rates, impacting net profitability.
+
+Sales exhibit clear monthly patterns useful for demand forecasting and inventory planning.
+
+Revenue contribution varies significantly across countries, highlighting key growth markets.
+
+---
+
+## Key KPIs Defined
+
+Total Revenue
+
+Net Revenue (after returns)
+
+Average Order Value (AOV)
+
+Customer Lifetime Revenue
+
+Customer Active Days
+
+Product Net Revenue
+
+Monthly Revenue Trends
+
+All KPIs are calculated using cleaned Silver-layer data to ensure accuracy and consistency.
 
 ---
 
 ## How to Run / Reproduce
 
-1. Clone this repository to your local machine.  
-2. Place the raw CSV (`online_retail.csv`) in the `/dataset` folder.  
-3. Execute the SQL scripts in the following order:  
-   - **Bronze Layer**: `bronze.proc_load_bronze_online_retail`  
-   - **Silver Layer**: `silver.proc_load_silver_online_retail`  
-   - **Gold Layer**: All views for analytics and reporting  
-4. Refer to the diagrams in `/docs` to understand the data flow and architecture.  
-5. Run the quality checks in `/tests` to validate the data before analysis.
+Clone this repository to your local machine
+
+Place online_retail.csv in the /dataset folder
+
+Execute SQL scripts in the following order:
+
+Bronze layer stored procedures
+
+Silver layer data cleaning procedures
+
+Gold layer view creation scripts
+
+Validate the data using the quality checks in the /tests folder
+
+Query the Gold views directly or connect them to a BI tool for visualization
 
 ---
 
-## Example Queries
+## Technologies & Skills Used
 
-**1. Top 5 Customers by Net Revenue**
-```sql
-SELECT TOP 5 CustomerID, NetRevenue
-FROM gold.customer_sales_report
-ORDER BY NetRevenue DESC;
-```
+SQL Server (T-SQL)
 
-**2. Monthly Sales Trend**
-```sql
-SELECT SalesYear, SalesMonth, TotalRevenue
-FROM gold.sales_trend_by_month
-ORDER BY SalesYear DESC, SalesMonth DESC;
+Data Cleaning & Transformation
 
-```
+CTEs and Aggregations
+
+Business KPI Modeling
+
+Customer & Product Segmentation
+
+Medallion (Bronze–Silver–Gold) Architecture
+
+Analytics View Design
+
+BI-ready Semantic Layer Design
 
 ---
 
 ## License
 
-This project is licensed under the MIT License.
-You are free to use, modify, and share it with proper attribution.
+This project is licensed under the MIT License. You are free to use, modify, and distribute this project with proper attribution.
 
 ---
 
 ## About Me
 
-Hi! I’m Meenakshi Singh, an aspiring Data Analyst with a strong foundation in SQL and Excel.
-I enjoy transforming raw data into meaningful insights, understanding relationships in data, and creating KPIs that help businesses make better decisions.
-This project reflects my hands-on approach to data analysis and reporting.
+Hi, I’m Meenakshi Singh, a Data Analyst with hands-on experience in SQL-based data analysis, KPI modeling, and analytical reporting. I enjoy transforming raw transactional data into structured, meaningful insights that support business decision-making. This project reflects my practical approach to building scalable and analytics-ready SQL solutions.
