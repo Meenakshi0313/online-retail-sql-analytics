@@ -1,10 +1,10 @@
 /*
 ===============================================================================
-Gold View: Product Sales Report
+Gold View: Product Sales Report (Optimized)
 ===============================================================================
 Purpose:
-    Aggregates sales metrics per product including quantity and revenue,
-    and derives a ProductSegment classification.
+    Aggregates sales metrics per product including revenue and quantity,
+    and assigns a ProductSegment classification.
 ===============================================================================
 */
 
@@ -20,12 +20,13 @@ WITH product_invoice_agg AS (
         LTRIM(RTRIM(Description)) AS Description,
         Country,
         SUM(CASE WHEN Quantity > 0 THEN Quantity ELSE 0 END) AS SoldQuantity,
-        SUM(CASE WHEN Quantity > 0 THEN Quantity*UnitPrice ELSE 0 END) AS GrossRevenue,
+        SUM(CASE WHEN Quantity > 0 THEN Quantity * UnitPrice ELSE 0 END) AS GrossRevenue,
         SUM(CASE WHEN Quantity < 0 THEN ABS(Quantity) ELSE 0 END) AS ReturnedQuantity,
-        SUM(CASE WHEN Quantity < 0 THEN ABS(Quantity*UnitPrice) ELSE 0 END) AS ReturnRevenue,
+        SUM(CASE WHEN Quantity < 0 THEN ABS(Quantity * UnitPrice) ELSE 0 END) AS ReturnRevenue,
         SUM(Quantity) AS NetQuantity,
         SUM(Quantity * UnitPrice) AS NetRevenue
     FROM silver.online_retail_clean
+    WHERE StockCode IS NOT NULL  -- filter out invalid product codes
     GROUP BY InvoiceNo, StockCode, Description, Country
 ),
 product_agg AS (
@@ -40,7 +41,7 @@ product_agg AS (
         SUM(GrossRevenue) AS GrossRevenue,
         SUM(ReturnRevenue) AS TotalReturnRevenue,
         SUM(NetRevenue) AS NetRevenue,
-        CAST(SUM(NetRevenue)*1.0 / NULLIF(COUNT(DISTINCT InvoiceNo),0) AS DECIMAL(10,2)) AS AvgOrderRevenue
+        CAST(SUM(NetRevenue) * 1.0 / NULLIF(COUNT(DISTINCT InvoiceNo),0) AS DECIMAL(10,2)) AS AvgOrderRevenue
     FROM product_invoice_agg
     GROUP BY StockCode, Description, Country
 )
@@ -57,10 +58,11 @@ SELECT
     NetRevenue,
     AvgOrderRevenue,
     CASE
-        WHEN NetRevenue < 0 THEN 'Net Loss Product'
+        WHEN NetRevenue < 0 THEN 'Net Loss Product'             -- negative net revenue
         WHEN NetRevenue BETWEEN 0 AND 3000 THEN 'Low Revenue Product'
         WHEN NetRevenue BETWEEN 3000 AND 6000 THEN 'Mid Revenue Product'
         ELSE 'High Revenue Product'
     END AS ProductSegment
 FROM product_agg;
 GO
+
