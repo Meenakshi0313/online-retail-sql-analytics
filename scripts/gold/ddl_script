@@ -1,16 +1,17 @@
 /*
 ===============================================================================
-Gold Layer: Star Schema (Dimensions & Fact)
-===============================================================================
-Purpose:
-    This script creates the Gold layer star schema for analytics.
+Author: Meenakshi Singh
+Project: Online Retail Data Warehouse
+Layer: Gold
+Description:
+    This script creates the Gold layer star schema including:
 
-    Objects Created:
         - gold.dim_customers
         - gold.dim_products
         - gold.fact_sales
 
-    The star schema enables scalable business reporting and BI analysis.
+    The star schema enables scalable analytics, BI reporting,
+    and business intelligence use cases.
 ===============================================================================
 */
 
