@@ -1,9 +1,9 @@
 /*
 ===============================================================================
-Gold View: Customer Segment Report
+Gold View: Customer Segment Report (Optimized)
 ===============================================================================
 Purpose:
-    Summarizes count and percentage of customers in each segment.
+    Summarizes the count and percentage of customers in each CustomerSegment.
 ===============================================================================
 */
 
@@ -13,6 +13,7 @@ GO
 CREATE VIEW gold.customer_segment_report AS
 
 WITH segment_agg AS (
+    -- Count customers in each segment
     SELECT
         CustomerSegment,
         COUNT(*) AS CustomerCount
@@ -20,13 +21,15 @@ WITH segment_agg AS (
     GROUP BY CustomerSegment
 ),
 grand_total AS (
+    -- Compute total number of customers for percentage calculation
     SELECT SUM(CustomerCount) AS TotalCustomers
     FROM segment_agg
 )
 SELECT
     s.CustomerSegment,
     s.CustomerCount,
-    CAST(s.CustomerCount * 100.0 / NULLIF(g.TotalCustomers,0) AS DECIMAL(5,2)) AS CustomerPercentage
+    -- Percentage of customers in this segment
+    ROUND(CAST(s.CustomerCount * 100.0 / NULLIF(g.TotalCustomers,0) AS DECIMAL(5,2)), 1) AS CustomerPercentage
 FROM segment_agg s
 CROSS JOIN grand_total g;
 GO
