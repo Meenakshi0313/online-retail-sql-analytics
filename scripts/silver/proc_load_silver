@@ -1,61 +1,58 @@
 /*
 ===============================================================================
-Stored Procedure: Load Silver Layer (Bronze -> Silver)
+Stored Procedure: Load Silver Layer - Online Retail Clean
 ===============================================================================
-Script Purpose:
-    This stored procedure loads and cleans data from the raw 
-    'bronze.online_retail' table into the cleansed 'silver.online_retail_clean' table.
-    - Removes invalid numeric and date values
-    - Trims unwanted spaces
-    - Removes duplicates
-    - Ensures only clean, analytics‑ready typed data is loaded
-
-Parameters:
-    None.
-
+Purpose:
+    - Loads cleaned and typed data from 'bronze.online_retail' into
+      'silver.online_retail_clean'.
+    - Ensures only valid numeric and datetime values are loaded.
+    - Trims text, removes duplicates based on primary key, and casts types.
+===============================================================================
 Usage Example:
     EXEC silver.proc_load_silver_online_retail;
 ===============================================================================
 */
 
-CREATE OR ALTER PROCEDURE silver.proc_load_silver_online_retail
+-- Drop procedure if it exists
+DROP PROCEDURE IF EXISTS silver.proc_load_silver_online_retail;
+GO
+
+-- Create procedure
+CREATE PROCEDURE silver.proc_load_silver_online_retail
 AS
 BEGIN
     BEGIN TRY
-        PRINT '================================================';
+        PRINT '==========================================';
         PRINT 'Loading Silver Layer - Online Retail Clean';
-        PRINT '================================================';
+        PRINT '==========================================';
 
-        -- Step 1: Truncate Silver clean table
+        -- Step 1: Truncate Silver table
         PRINT '>> Truncating Table: silver.online_retail_clean';
         TRUNCATE TABLE silver.online_retail_clean;
 
-        -- Step 2: Insert cleaned, deduplicated, and typed data
-        PRINT '>> Inserting Cleaned Data into: silver.online_retail_clean';
+        -- Step 2: Insert cleaned and typed data
+        PRINT '>> Inserting Cleaned Data into Silver Table';
 
-        WITH cleaned AS (
-            -- Clean and convert types, filter invalid
+        ;WITH cleaned AS (
             SELECT
                 InvoiceNo,
                 StockCode,
                 LTRIM(RTRIM(Description)) AS Description,
                 TRY_CAST(Quantity AS INT) AS Quantity,
-                TRY_CONVERT(DATETIME, InvoiceDate, 103) AS InvoiceDate,
+                TRY_CONVERT(DATETIME, InvoiceDate, 103) AS InvoiceDate,  -- dd/mm/yyyy
                 TRY_CAST(UnitPrice AS DECIMAL(10,2)) AS UnitPrice,
                 CustomerID,
                 LTRIM(RTRIM(Country)) AS Country,
                 ROW_NUMBER() OVER (
-                    PARTITION BY InvoiceNo, StockCode, CustomerID
-                    ORDER BY InvoiceNo
+                    PARTITION BY InvoiceNo, StockCode   -- Deduplicate based on PK
+                    ORDER BY InvoiceDate DESC           -- Keep latest if duplicates exist
                 ) AS rn
             FROM bronze.online_retail
             WHERE
-                -- Only include rows where conversions succeeded
                 TRY_CAST(Quantity AS INT) IS NOT NULL
                 AND TRY_CONVERT(DATETIME, InvoiceDate, 103) IS NOT NULL
                 AND TRY_CAST(UnitPrice AS DECIMAL(10,2)) IS NOT NULL
         )
-
         INSERT INTO silver.online_retail_clean (
             InvoiceNo,
             StockCode,
@@ -76,20 +73,25 @@ BEGIN
             CustomerID,
             Country
         FROM cleaned
-        WHERE rn = 1   -- Keep only first instance per unique key
+        WHERE rn = 1;   -- Keep only first row per InvoiceNo + StockCode
+
+        -- Step 3: Print total rows loaded
+        DECLARE @row_count INT;
+        SELECT @row_count = COUNT(*) FROM silver.online_retail_clean;
+        PRINT '>> Total Rows Loaded: ' + CAST(@row_count AS NVARCHAR);
 
         PRINT 'Silver Layer Loaded Successfully';
-        PRINT '================================================';
+        PRINT '==========================================';
 
     END TRY
     BEGIN CATCH
-        PRINT '================================================';
-        PRINT 'ERROR OCCURRED DURING SILVER LOAD PROCESS';
+        PRINT '==========================================';
+        PRINT 'ERROR OCCURRED DURING SILVER LOAD';
         PRINT 'Error Message : ' + ERROR_MESSAGE();
         PRINT 'Error Number  : ' + CAST(ERROR_NUMBER() AS NVARCHAR);
         PRINT 'Error State   : ' + CAST(ERROR_STATE() AS NVARCHAR);
         PRINT 'Error Line    : ' + CAST(ERROR_LINE() AS NVARCHAR);
-        PRINT '================================================';
+        PRINT '==========================================';
     END CATCH
 END;
 GO
@@ -97,3 +99,4 @@ GO
 -- Execute the procedure
 EXEC silver.proc_load_silver_online_retail;
 GO
+
