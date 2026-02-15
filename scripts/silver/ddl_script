@@ -2,13 +2,10 @@
 ===============================================================================
 DDL Script: Create Silver Table - Online Retail Clean
 ===============================================================================
-Script Purpose:
-    This script creates the 'silver.online_retail_clean' table, which stores
-    cleaned and standardized data extracted from the 'bronze.online_retail'
-    raw table. Proper data types are applied for analytics and reporting.
-
-    This table will be loaded in the Silver layer after filtering and
-    transformation in the Silver load procedure.
+Purpose:
+    - Creates the 'silver.online_retail_clean' table for cleaned and typed data.
+    - Applies proper data types for analytics and reporting.
+    - Adds a composite primary key on (InvoiceNo, StockCode) to prevent duplicates.
 ===============================================================================
 */
 
@@ -16,7 +13,7 @@ Script Purpose:
 DROP TABLE IF EXISTS silver.online_retail_clean;
 GO
 
--- Create Silver table with appropriate data types
+-- Create Silver table with primary key
 CREATE TABLE silver.online_retail_clean (
     InvoiceNo    NVARCHAR(50)    NOT NULL,     -- Invoice number
     StockCode    NVARCHAR(50)    NOT NULL,     -- Product code
@@ -25,6 +22,8 @@ CREATE TABLE silver.online_retail_clean (
     InvoiceDate  DATETIME,                      -- Invoice date and time
     UnitPrice    DECIMAL(10,2),                -- Unit price with decimal precision
     CustomerID   NVARCHAR(50),                -- Customer identifier
-    Country      NVARCHAR(50)                 -- Country of purchase
+    Country      NVARCHAR(50),                 -- Country of purchase
+
+    CONSTRAINT PK_online_retail_clean PRIMARY KEY (InvoiceNo, StockCode)  -- Composite primary key
 );
 GO
