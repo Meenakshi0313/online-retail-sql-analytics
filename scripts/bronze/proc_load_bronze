@@ -1,69 +1,60 @@
 /*
 ===============================================================================
-Stored Procedure: Load Bronze Layer (Source -> Bronze)
+Stored Procedure: Load Bronze Layer - Online Retail
 ===============================================================================
-Script Purpose:
-    This stored procedure loads data into the 'bronze.online_retail' table
-    from an external CSV file. It performs the following actions:
-    - Truncates the bronze table before loading.
-    - Uses BULK INSERT to load CSV data into the raw bronze table.
-
-Parameters:
-    None.
-
-Usage Example:
-    EXEC bronze.proc_load_bronze_online_retail;
+Purpose:
+    - Loads CSV data into 'bronze.online_retail' table.
+    - Truncates table before load.
+    - Uses dynamic SQL for BULK INSERT (required for variable file path).
+===============================================================================
+Usage:
+    EXEC bronze.proc_load_bronze_online_retail @csv_path = 'C:\SQLData\online_retail.csv';
 ===============================================================================
 */
 
-CREATE OR ALTER PROCEDURE bronze.proc_load_bronze_online_retail
+-- Drop procedure if it exists
+DROP PROCEDURE IF EXISTS bronze.proc_load_bronze_online_retail;
+GO
+
+-- Create procedure
+CREATE PROCEDURE bronze.proc_load_bronze_online_retail
+    @csv_path NVARCHAR(255)
 AS
 BEGIN
-    DECLARE @start_time DATETIME, @end_time DATETIME;
+    PRINT '========================';
+    PRINT 'Loading Bronze Layer';
+    PRINT '========================';
 
-    BEGIN TRY
-        PRINT '================================================';
-        PRINT 'Loading Bronze Layer - Online Retail';
-        PRINT '================================================';
+    -- Clear existing data
+    TRUNCATE TABLE bronze.online_retail;
 
-        SET @start_time = GETDATE();
+    -- Dynamic SQL for BULK INSERT
+    DECLARE @sql NVARCHAR(MAX);
+    SET @sql = N'
+    BULK INSERT bronze.online_retail
+    FROM ''' + @csv_path + '''
+    WITH (
+        FIRSTROW = 2,
+        FIELDTERMINATOR = '','',
+        ROWTERMINATOR = ''\n'',
+        TABLOCK,
+        DATAFILETYPE = ''char''
+    )';
+    EXEC(@sql);
 
-        PRINT '>> Truncating Table: bronze.online_retail';
-        TRUNCATE TABLE bronze.online_retail;
+    -- Print total rows loaded
+    SELECT COUNT(*) AS RowsLoaded FROM bronze.online_retail;
 
-        PRINT '>> Inserting Data Into: bronze.online_retail';
-        BULK INSERT bronze.online_retail
-        FROM 'C:\SQLData\online_retail.csv'
-        WITH (
-            FIRSTROW = 2,
-            FIELDTERMINATOR = ',',
-            TABLOCK
-        );
-
-        SET @end_time = GETDATE();
-
-        PRINT 'Load Completed Successfully';
-        PRINT '>> Load Duration: ' 
-              + CAST(DATEDIFF(SECOND, @start_time, @end_time) AS NVARCHAR)
-              + ' seconds';
-        PRINT '================================================';
-
-    END TRY
-    BEGIN CATCH
-        PRINT '================================================';
-        PRINT 'ERROR OCCURRED DURING BRONZE LOAD PROCESS';
-        PRINT 'Error Message : ' + ERROR_MESSAGE();
-        PRINT 'Error Number  : ' + CAST(ERROR_NUMBER() AS NVARCHAR);
-        PRINT 'Error State   : ' + CAST(ERROR_STATE() AS NVARCHAR);
-        PRINT 'Error Line    : ' + CAST(ERROR_LINE() AS NVARCHAR);
-        PRINT '================================================';
-    END CATCH
+    PRINT 'Load Completed Successfully';
+    PRINT '========================';
 END;
 GO
 
--- Execute the procedure
-EXEC bronze.proc_load_bronze_online_retail;
+-- Execute procedure
+DECLARE @csv_file NVARCHAR(255) = 'C:\SQLData\online_retail.csv';  -- Update this path
+EXEC bronze.proc_load_bronze_online_retail @csv_path = @csv_file;
 GO
+
 
 
 
