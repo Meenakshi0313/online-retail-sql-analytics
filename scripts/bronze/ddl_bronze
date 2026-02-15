@@ -2,14 +2,10 @@
 ===============================================================================
 DDL Script: Create Bronze Table - Online Retail
 ===============================================================================
-Script Purpose:
-    This script creates the 'bronze.online_retail' table for raw data ingestion.
-    Improvements:
-        - Ensures schema exists before creating table
-        - Preserves raw source fidelity (all columns as NVARCHAR)
-        - Adds ingestion metadata (load_date, source_file)
-        - Fully idempotent (drop table if exists)
-        - Column naming matches source for lineage
+Purpose:
+    - Creates the 'bronze.online_retail' table to match the CSV columns exactly.
+    - All columns as NVARCHAR to preserve raw data.
+    - No extra columns (like load_date) in Bronze to avoid BULK INSERT errors.
 ===============================================================================
 */
 
@@ -20,32 +16,20 @@ BEGIN
 END
 GO
 
--- Drop the table if it already exists
+-- Drop existing table if exists
 DROP TABLE IF EXISTS bronze.online_retail;
 GO
 
 -- Create Bronze table
 CREATE TABLE bronze.online_retail (
-    InvoiceNo    NVARCHAR(20)  NULL,  -- Preserved from source
-    StockCode    NVARCHAR(20)  NULL,  -- Preserved from source
-    Description  NVARCHAR(255) NULL,  -- Preserved from source
-    Quantity     NVARCHAR(50)  NULL,  -- Preserved as string to prevent load errors
-    InvoiceDate  NVARCHAR(50)  NULL,  -- Preserved as string; transform later
-    UnitPrice    NVARCHAR(50)  NULL,  -- Preserved as string; transform later
-    CustomerID   NVARCHAR(20)  NULL,  -- Preserved from source
-    Country      NVARCHAR(100) NULL,  -- Preserved from source
-
-    -- Ingestion metadata
-    load_date    DATETIME2 DEFAULT GETDATE(),  -- Timestamp of load
-    source_file  NVARCHAR(255) NULL            -- Optional: track source filename
+    InvoiceNo    NVARCHAR(20)  NULL,
+    StockCode    NVARCHAR(20)  NULL,
+    Description  NVARCHAR(255) NULL,
+    Quantity     NVARCHAR(50)  NULL,
+    InvoiceDate  NVARCHAR(50)  NULL,
+    UnitPrice    NVARCHAR(50)  NULL,
+    CustomerID   NVARCHAR(20)  NULL,
+    Country      NVARCHAR(100) NULL
 );
-GO
-
--- Optional: Add table comment for portfolio documentation
-EXEC sp_addextendedproperty 
-    @name = N'MS_Description', 
-    @value = N'Bronze layer table: stores raw online retail data as-is from source. All columns NVARCHAR for data fidelity. Includes ingestion metadata.', 
-    @level0type = N'SCHEMA', @level0name = N'bronze', 
-    @level1type = N'TABLE',  @level1name = N'online_retail';
 GO
 
