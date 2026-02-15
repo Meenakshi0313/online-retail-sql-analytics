@@ -1,0 +1,117 @@
+/*
+===============================================================================
+Gold Layer: Star Schema (Dimensions & Fact)
+===============================================================================
+Purpose:
+    This script creates the Gold layer star schema for analytics.
+
+    Objects Created:
+        - gold.dim_customers
+        - gold.dim_products
+        - gold.fact_sales
+
+    The star schema enables scalable business reporting and BI analysis.
+===============================================================================
+*/
+
+
+/* ============================================================================
+   Dim Customers
+============================================================================ */
+
+DROP VIEW IF EXISTS gold.dim_customers;
+GO
+
+CREATE VIEW gold.dim_customers AS
+
+WITH customer_base AS (
+    SELECT
+        CustomerID,
+        Country,
+        MIN(InvoiceDate) AS FirstPurchaseDate,
+        MAX(InvoiceDate) AS LastPurchaseDate,
+        SUM(Quantity * UnitPrice) AS NetRevenue
+    FROM silver.online_retail_clean
+    WHERE CustomerID IS NOT NULL
+    GROUP BY CustomerID, Country
+)
+
+SELECT
+    CustomerID,
+    Country,
+    FirstPurchaseDate,
+    LastPurchaseDate,
+    DATEDIFF(DAY, FirstPurchaseDate, LastPurchaseDate) + 1 AS ActiveDays,
+    NetRevenue,
+    CASE
+        WHEN NetRevenue < 0 THEN 'Loss Making Customer'
+        WHEN NetRevenue >= 10000 AND DATEDIFF(DAY, FirstPurchaseDate, LastPurchaseDate) >= 360 THEN 'High Value Loyal Customer'
+        WHEN NetRevenue >= 10000 THEN 'High Value New Customer'
+        WHEN NetRevenue BETWEEN 3000 AND 9999 AND DATEDIFF(DAY, FirstPurchaseDate, LastPurchaseDate) >= 180 THEN 'Mid Value Loyal Customer'
+        WHEN NetRevenue BETWEEN 3000 AND 9999 THEN 'Mid Value New Customer'
+        ELSE 'Low Value Customer'
+    END AS CustomerSegment
+
+FROM customer_base;
+GO
+
+
+/* ============================================================================
+   Dim Products
+============================================================================ */
+
+DROP VIEW IF EXISTS gold.dim_products;
+GO
+
+CREATE VIEW gold.dim_products AS
+
+WITH product_base AS (
+    SELECT
+        StockCode,
+        LTRIM(RTRIM(Description)) AS Description,
+        SUM(Quantity * UnitPrice) AS NetRevenue
+    FROM silver.online_retail_clean
+    WHERE StockCode IS NOT NULL
+          AND LTRIM(RTRIM(Description)) <> ''
+    GROUP BY StockCode, LTRIM(RTRIM(Description))
+)
+
+SELECT
+    StockCode,
+    Description,
+    NetRevenue,
+    CASE
+        WHEN NetRevenue < 0 THEN 'Net Loss Product'
+        WHEN NetRevenue BETWEEN 0 AND 3000 THEN 'Low Revenue Product'
+        WHEN NetRevenue BETWEEN 3000 AND 6000 THEN 'Mid Revenue Product'
+        ELSE 'High Revenue Product'
+    END AS ProductSegment
+
+FROM product_base;
+GO
+
+
+/* ============================================================================
+   Fact Sales
+============================================================================ */
+
+DROP VIEW IF EXISTS gold.fact_sales;
+GO
+
+CREATE VIEW gold.fact_sales AS
+SELECT
+    InvoiceNo,
+    CustomerID,
+    StockCode,
+    InvoiceDate,
+    Quantity,
+    UnitPrice,
+
+    CASE WHEN Quantity > 0 THEN Quantity * UnitPrice ELSE 0 END AS GrossRevenue,
+    CASE WHEN Quantity < 0 THEN ABS(Quantity * UnitPrice) ELSE 0 END AS ReturnRevenue,
+    Quantity * UnitPrice AS NetRevenue
+
+FROM silver.online_retail_clean
+WHERE CustomerID IS NOT NULL
+      AND StockCode IS NOT NULL;
+GO
